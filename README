@@ -1,0 +1,108 @@
+# Specs de configuración
+
+## Specs de configuración global
+
+- configurar un almacenamiento de tipo clave / valor: memcached, tokyo lightcloud...
+
+- configurar un sistema de colas que realice estas acciones en background
+
+## Specs de configuración para cada lista
+
+- configurar un identificador
+
+- configurar cuántos ítems por página
+
+- configurar la clase de los elementos que se van a almacenar. Por ejemplo: clase Activity de iwanna
+
+- configurar a quién pertenece la lista. Por ejemplo: la lista pertenece a usuarios. También se podría determinar si pertenece a la clase o a las instancias. Si perteneciera a la clase, sólo habría una lista para User, que podría ser la última actividad del site.
+
+- configurar cuándo se crea una lista. Por ejemplo: cuando añado a un nuevo amigo
+
+- configurar cuándo se introducen elementos en la lista. Por ejemplo: cuando un nuevo ojeto de la case de la lista se crea (normalmente será así)
+
+- configurar cuándo se borran elementos de la lista. Por ejemplo: cuando dejo de seguir a una persona
+
+- configurar orden de los elementos
+
+- configurar condiciones que tienen que cumplir para pertenecer a la lista
+
+
+## Ejemplo iwanna
+
+  Global:
+    - tokyo *
+    - starling *
+
+  Lista de actividades:
+    - friends_activity
+    - Activity
+    - users
+    - UserFriendship#after_create
+    - Activity#after_save
+    - UserFriendship#after_destroy
+    - "created_at DESC"
+    - user.friends.include?(Activity.user_id)
+
+## Ejemplo partigi
+
+  Global:
+    - tokyo
+    - starling
+
+  Ultimas reviews de mis amigos todos:
+    - friends_reviews
+    - Review
+    - users
+    - UserFriendship#after_create
+    - Review#after_save
+    - UserFriendship#after_destroy
+    - "created_at DESC"
+    - user.friends.include?(Review.user_id)
+
+  Ultimas reviews de mis amigos una por persona:
+    - friends_reviews_one_per_person
+    - Review
+    - users
+    - UserFriendship#after_create
+    - Review#after_save
+    - UserFriendship#after_destroy
+    - "created_at DESC"
+    - user.friends.include?(Review.user_id) && !FilteredList.users.include?(user.id) *
+    
+  Reviews de mis amigos de una película
+    - film_friends_reviews
+    - Review
+    - users & films *
+    - UserFriendship#after_create
+    - Review#after_save
+    - UserFriendship#after_destroy
+    - "created_at DESC" & cantidad de texto de la review
+    - user.friends.include?(Review.user_id)
+    
+# Specs de lectura
+
+Sintaxis ActiveRecord + Will Paginate
+
+- método find con opciones: `limit`, `offset`, primer selector (:first, :all, :last)
+
+- metodo paginate con opciones: `page` y `per_page`
+
+Ejemplos:
+
+    # ej 1
+    current_user.friends_reviews.find :all, :limit => 10
+    
+    # ej 2
+    current_user.friends_reviews_one_per_person.paginate :per_page => 50, :page => params[:page]
+    
+    # ej 3
+    current_user.film_friends_reviews(:film => film).find :all, :limit => 10
+    film.film_friends_reviews(:user => user).find :all, :limit => 10    
+    
+    
+    
+# Dudas
+
+- qué hacemos para borrar y no dejar de poder utilizar el índice?
+- qué hacemos para insertar los elementos en orden
+
