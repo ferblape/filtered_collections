@@ -7,12 +7,11 @@ module FilteredCollections
   
     module ClassMethods
     
-      # TODO
-      # def has_collection( collection_name )
-      #   define_method collection_name.to_sym do
-      #     puts "collection_name: #{collection_name.camelize}"
-      #   end
-      # end
+      def has_collection( collection_name, options = {} )
+        define_method collection_name.to_sym do
+          eval(collection_name.to_s.camelize.constantize.builder(options))
+        end
+      end
       
     end
   
