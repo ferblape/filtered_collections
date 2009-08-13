@@ -5,7 +5,7 @@ puts
 
 initializer_path_dest = Dir.getwd + "/config/initializers/"
 initializer_path = Dir.getwd + "/vendor/plugins/filtered_collections/config/initializers/filtered_collections.rb"
-unless File.exist?(initializer_path_dest)
+unless File.exist?(initializer_path_dest + 'filtered_collections.rb')
   FileUtils.cp  initializer_path, initializer_path_dest
   puts "=> Copied initializer file."
 else
