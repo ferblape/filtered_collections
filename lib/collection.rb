@@ -86,6 +86,26 @@ module FilteredCollections
       end
       self.save
     end
+
+    def store_elements( elements )
+      sort_required = false
+      elements.each do |element|
+        if position = self.index( element.id )
+          if self.elements[position].values.first != element.send(self.order_by_attribute)
+            self.elements[position][element.id] = element.send(self.order_by_attribute)
+            sort_required = true
+          end
+        else
+          self.elements << {element.id => element.send(self.order_by_attribute)}
+          self.total_elements += 1
+          sort_required = true
+        end
+      end
+      if sort_required
+        self.reorder!
+      end
+      self.save
+    end
     
     # options sólo admite:
     #  - :limit 

@@ -8,7 +8,9 @@ module FilteredCollections
     module ClassMethods
     
       def has_collection( collection_name, options = {} )
-        define_method collection_name.to_sym do
+        args = []
+        args << options[:args].to_sym if options[:args]
+        define_method collection_name.to_sym do |*args|
           eval(collection_name.to_s.camelize.constantize.builder(options))
         end
       end
