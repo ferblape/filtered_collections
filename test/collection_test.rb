@@ -81,6 +81,18 @@ class CollectionTest < Test::Unit::TestCase
     assert_nil c.index(3)
   end
   
+  def test_store_elements
+    c = FilteredCollections::Collection.new( Element, @owner.id, :value, :desc )
+    assert_nil FilteredCollections.storage.get(c.key)
+    e1 = Element.new(2)
+    e2 = Element.new(1)
+    c.store_elements( [e2, e1] )
+    assert_equal 2, c.total_elements
+    assert c.elements_ids.include?(e1.id)
+    assert c.elements_ids.include?(e2.id)
+    assert_not_nil FilteredCollections.storage.get(c.key)    
+  end
+  
   def test_store_element_when_no_elements
     c = FilteredCollections::Collection.new( Element, @owner.id, :value, :desc )
     assert_nil FilteredCollections.storage.get(c.key)
