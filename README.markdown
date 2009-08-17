@@ -90,7 +90,9 @@ This is a real example of collection. Let's analyze it!
 This class method declares a Hash with a list of required keys. This keys are:
 
   - `:elements_class`: the class of the elements stored in the collection. **There is one only type of objects in each collection**
+
   - `:order_by_attribute`: the attribute of the elements with wich they are goint to be ordered by. It can be a method or an attribute
+
   - `:order`: takes two values `:asc` or `:desc`
   
 #### self.set_callbacks
@@ -130,7 +132,6 @@ For example, we have our tests in a folder named `test/unit/collections`.
 
 It is important to notice that the callbacks of the collections (loaded in the initialized) are not set in the test environment, in order to not influence in the rest of tests (if you run your tests a lot of callbacks will be executed while they are not necessary all the time). So you'll have to call the method `set_callbacks` inside your test file.
 
-
 ## Acts as stored in cache
 
 This is a small hack to improve the performance of the collections: internally, a collection stores the list of the identifieres of the elements. Methods `find` and `paginate` loads the object given its identifier with a simple `ActiveRecord::Base.find`.
@@ -146,7 +147,7 @@ If you define a lot of callbacks your application will become slower and slower.
 
   - Improve the documentation with some examples
 
-  - Test the `paginate` method (it works, I'm sure :)
+  - Define the exceptions
   
   - Let the storage system to be configurable
 
