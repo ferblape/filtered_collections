@@ -176,7 +176,7 @@ class CollectionTest < Test::Unit::TestCase
     assert_equal [e3, e2, e1].map(&:id), result
   end
 
-  # Nos aseguramos de que devuelva por id y no por el valor
+  # We get sure the the order of storing is not important, but the value
   def test_find_all_elements_returns_inverse_order_and_correct
     c = FilteredCollections::Collection.new( Element, @owner.id, :value, :desc )
     e1 = Element.new(2)
@@ -265,6 +265,21 @@ class CollectionTest < Test::Unit::TestCase
         
     result = c.find(:first, :offset => 2)
     assert_equal e2.id, result
+  end
+  
+  def test_paginate
+    c = FilteredCollections::Collection.new( Element, @owner.id, :value, :desc )
+    e1 = Element.new(1)
+    e2 = Element.new(2)
+    e3 = Element.new(3)
+    e4 = Element.new(4)
+    c.store_element( e2 )
+    c.store_element( e1 )
+    c.store_element( e3 )
+    c.store_element( e4 )
+    
+    result = c.paginate(:page => 2, :per_page => 2)
+    assert_equal [e2, e1].map(&:id), result
   end
   
   def test_delete_element_removes_element_and_reorders

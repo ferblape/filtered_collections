@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'will_paginate'
+
 module FilteredCollections
   class Collection
     
