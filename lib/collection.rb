@@ -107,7 +107,7 @@ module FilteredCollections
       self.save
     end
     
-    # options sólo admite:
+    # allowed values for options:
     #  - :limit 
     #  - :offset
     def find( search_type, options = {} )
@@ -146,7 +146,7 @@ module FilteredCollections
       end
     end
 
-    # options sólo admite:
+    # allowed values for options:
     #  - :per_page
     #  - :page
     def paginate( options = {} )

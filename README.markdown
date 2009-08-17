@@ -20,6 +20,7 @@ This is not a generic plugin, but one with a lot of dependencies (opinions :D) a
   - Active Record >= 2.0
   - [Tokyo Tirant and Tokyo Cabinet](http://tokyocabinet.sourceforge.net/tyrantdoc/)
   - [lightcloud](http://github.com/mitchellh/lightcloud/tree/master) >= 0.8.0
+  - [Will Paginate](http://github.com/mislav/will_paginate/tree/master)
   - `Memcached` is very recommendable
   - also is very recommendable a queue system such as `Starling` or `Delayed Jobs`
   
@@ -130,6 +131,12 @@ For example, we have our tests in a folder named `test/unit/collections`.
 It is important to notice that the callbacks of the collections (loaded in the initialized) are not set in the test environment, in order to not influence in the rest of tests (if you run your tests a lot of callbacks will be executed while they are not necessary all the time). So you'll have to call the method `set_callbacks` inside your test file.
 
 
+## Acts as stored in cache
+
+This is a small hack to improve the performance of the collections: internally, a collection stores the list of the identifieres of the elements. Methods `find` and `paginate` loads the object given its identifier with a simple `ActiveRecord::Base.find`.
+
+We recommend you to use `acts_as_stored_in_cache` which stores every object in Memcached every time it changes. That way, when the collection is loaded, instead of a `ActiveRecord::Base.find` a read from Memcached is performed.
+
 ## Some advices
 
 If you define a lot of callbacks your application will become slower and slower. Be careful and use a queue system.
@@ -143,5 +150,8 @@ If you define a lot of callbacks your application will become slower and slower.
   
   - Let the storage system to be configurable
 
+  - Managing duplicates
+  
+  - Allow transactions when big changes occurs
 
 Copyright (c) 2009 [Fernando Blat](http://www.inwebwetrust.net), released under the MIT license
