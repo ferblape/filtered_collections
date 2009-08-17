@@ -302,6 +302,21 @@ class CollectionTest < Test::Unit::TestCase
     assert_equal [e4, e2, e1].map(&:id), result
   end
   
-  private
+  def test_store_should_remove_duplicates_by_default
+    c = FilteredCollections::Collection.new( Element, @owner.id, :value, :desc )
+    e1 = Element.new(1)
+    e2 = Element.new(2)
+    e3 = Element.new(3)
+    e4 = Element.new(4)
+    c.store_element( e2 )
+    c.store_element( e1 )
+    c.store_element( e3 )
+    c.store_element( e4 )
+    c.store_element( e3 )
+    c.store_element( e1 )
+    
+    assert_equal 4, c.total_elements
+    assert_equal [e4, e3, e2, e1].map(&:id), c.find(:all)
+  end
 
 end

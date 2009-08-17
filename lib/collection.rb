@@ -44,9 +44,9 @@ module FilteredCollections
     end
     # /keys
     
-    # ask
+    # asking
     def empty?; self.elements_ids.empty? end
-        
+    
     def include?( element_id )
       self.elements_ids.include?( element_id )
     end
@@ -54,7 +54,7 @@ module FilteredCollections
     def index( element_id )
       self.elements_ids.index(element_id)
     end
-    # /ask
+    # /asking
     
     def last_position; self.total_elements end
     
@@ -68,7 +68,7 @@ module FilteredCollections
       self.save
     end
     
-    def store_element( element )
+    def store_element( element, save = true )
       raise unless element.is_a?(self.elements_class)
       raise unless element.respond_to?(:id)
       raise unless element.respond_to?(self.order_by_attribute)
@@ -87,25 +87,12 @@ module FilteredCollections
       if sort_required
         self.reorder!
       end
-      self.save
+      self.save if save
     end
 
     def store_elements( elements )
-      sort_required = false
       elements.each do |element|
-        if position = self.index( element.id )
-          if self.elements[position].values.first != element.send(self.order_by_attribute)
-            self.elements[position][element.id] = element.send(self.order_by_attribute)
-            sort_required = true
-          end
-        else
-          self.elements << {element.id => element.send(self.order_by_attribute)}
-          self.total_elements += 1
-          sort_required = true
-        end
-      end
-      if sort_required
-        self.reorder!
+        self.store_element( element, false )
       end
       self.save
     end
@@ -150,8 +137,8 @@ module FilteredCollections
     end
 
     # allowed values for options:
-    #  - :per_page
-    #  - :page
+    #  - :per_page: default 50
+    #  - :page: default 1
     def paginate( options = {} )
       page = options[:page].to_i || 1
       page = 1 if page <= 0
@@ -180,14 +167,13 @@ module FilteredCollections
       FilteredCollections.storage.set(key, Marshal.dump(self).to_yaml)
     end
     
-    def self.set_callbacks
-    end
+    def self.set_callbacks; end
 
-    def self.build_all
-    end
+    def self.build_all; end
     
-    def self.build( id )
-    end
+    def self.build( id ); end
+    
+    def self.attributes; {} end
 
     protected
     
