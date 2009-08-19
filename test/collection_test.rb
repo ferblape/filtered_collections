@@ -152,14 +152,13 @@ class CollectionTest < Test::Unit::TestCase
     assert_equal 2, c.total_elements
     assert c.elements_ids.include?(e2.id)
     
+    assert_equal [e2, e1].map(&:id), c.find(:all)
+    
     e2.value = 5
     c.store_element( e2 )
 
     assert_equal 2, c.total_elements
-    assert_equal c.elements.first.keys.first, e1.id
-    assert_equal c.elements.first.values.first, e1.value
-    assert_equal c.elements[1].keys.first, e2.id
-    assert_equal c.elements[1].values.first, e2.value
+    assert_equal [e1, e2].map(&:id), c.find(:all)
   end
 
   def test_find_all_elements_returns_inverse_order
