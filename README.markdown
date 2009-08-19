@@ -151,7 +151,7 @@ If you define a lot of callbacks your application will become slower and slower.
   
   - Let the storage system to be configurable
 
-  - Managing duplicates
+  - Allow to have elements of different classes
   
   - Allow transactions when big changes occurs
 
