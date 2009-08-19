@@ -13,15 +13,6 @@ module FilteredCollections
     attr_accessor :order
     attr_accessor :elements
     
-    def self.builder(options = {})
-      attributes = self.attributes.merge(options)
-      "#{self}.load_or_initialize( #{attributes[:elements_class]}, #{attributes[:belongs_to]}, :#{attributes[:order_by_attribute]}, :#{attributes[:order]} )"
-    end
-    
-    def self.load_or_initialize( elements_class, belongs_to, order_by_attribute, order )
-      self.load( elements_class, belongs_to ) || self.new( elements_class, belongs_to, order_by_attribute, order )
-    end
-    
     def initialize( elements_class, belongs_to, order_by_attribute, order )
       self.elements_class = elements_class
       self.belongs_to = belongs_to
@@ -32,6 +23,16 @@ module FilteredCollections
       self.elements_ids = []
       self.elements = []
     end
+
+    def self.load_or_initialize( elements_class, belongs_to, order_by_attribute, order )
+      self.load( elements_class, belongs_to ) || self.new( elements_class, belongs_to, order_by_attribute, order )
+    end
+
+    def self.builder(options = {})
+      attributes = self.attributes.merge(options)
+      "#{self}.load_or_initialize( #{attributes[:elements_class]}, #{attributes[:belongs_to]}, :#{attributes[:order_by_attribute]}, :#{attributes[:order]} )"
+    end
+    
     
     # keys
     def self.key_for( elements_class, belongs_to )
@@ -44,7 +45,6 @@ module FilteredCollections
     end
     # /keys
     
-    # asking
     def empty?; self.elements_ids.empty? end
     
     def include?( element_id )
@@ -54,7 +54,6 @@ module FilteredCollections
     def index( element_id )
       self.elements_ids.index(element_id)
     end
-    # /asking
     
     def last_position; self.total_elements end
     
@@ -69,7 +68,6 @@ module FilteredCollections
     end
     
     def store_element( element, save = true )
-      raise unless element.is_a?(self.elements_class)
       raise unless element.respond_to?(:id)
       raise unless element.respond_to?(self.order_by_attribute)
       
