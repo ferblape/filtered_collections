@@ -24,7 +24,7 @@ This is not a generic plugin, but one with a lot of dependencies (opinions :D) a
   - `Memcached` is very recommendable
   - also is very recommendable a queue system such as `Starling` or `Delayed Jobs`
   
-The idea is to let you to choose differente storages (you are welcome to fork it ;)
+The idea is to let you to choose different storage's (you are welcome to fork it ;)
 
 ## Installation
 
@@ -34,7 +34,7 @@ Also, you have to declare your lightcloud list of servers in `config/lightcloud.
     
 ## Basic usage
     
-After installing it a new initializer will be copied into your `config/initializers` folder. That initalizer loads every file in `lib/collections` with extension `*.rb` and calls its method `self.set_callbacks` that we'll explain down.
+After installing it a new initialiser will be copied into your `config/initializers` folder. That initialiser loads every file in `lib/collections` with extension `*.rb` and calls its method `self.set_callbacks` that we'll explain down.
 
 As we said before, the idea is that the collections belong_to the objects of a class. For example, I want that a given user has a collection of the reviews created only by his friends. I can indicate this by adding:
 
@@ -83,7 +83,7 @@ Of course, it is necessary to have declared a collection class with name `Friend
   
     end
     
-This is a real example of collection. Let's analyze it!
+This is a real example of collection. Let's analyse it!
 
 #### self.attributes
 
@@ -91,7 +91,7 @@ This class method declares a Hash with a list of required keys. This keys are:
 
   - `:elements_class`: the class of the elements stored in the collection. **There is one only type of objects in each collection**
 
-  - `:order_by_attribute`: the attribute of the elements with wich they are goint to be ordered by. It can be a method or an attribute
+  - `:order_by_attribute`: the attribute of the elements with which they are going to be ordered by. It can be a method or an attribute
 
   - `:order`: takes two values `:asc` or `:desc`
   
@@ -130,11 +130,11 @@ As the collections for your application depend on you, also the tests. We recomm
 
 For example, we have our tests in a folder named `test/unit/collections`.
 
-It is important to notice that the callbacks of the collections (loaded in the initialized) are not set in the test environment, in order to not influence in the rest of tests (if you run your tests a lot of callbacks will be executed while they are not necessary all the time). So you'll have to call the method `set_callbacks` inside your test file.
+It is important to notice that the callbacks of the collections (loaded in the initialised) are not set in the test environment, in order to not influence in the rest of tests (if you run your tests a lot of callbacks will be executed while they are not necessary all the time). So you'll have to call the method `set_callbacks` inside your test file.
 
 ## Acts as stored in cache
 
-This is a small hack to improve the performance of the collections: internally, a collection stores the list of the identifieres of the elements. Methods `find` and `paginate` loads the object given its identifier with a simple `ActiveRecord::Base.find`.
+This is a small hack to improve the performance of the collections: internally, a collection stores the list of the identifiers of the elements. Methods `find` and `paginate` loads the object given its identifier with a simple `ActiveRecord::Base.find`.
 
 We recommend you to use `acts_as_stored_in_cache` which stores every object in Memcached every time it changes. That way, when the collection is loaded, instead of a `ActiveRecord::Base.find` a read from Memcached is performed.
 
@@ -147,8 +147,6 @@ If you define a lot of callbacks your application will become slower and slower.
 
   - Improve the documentation with some examples
 
-  - Define the exceptions
-  
   - Let the storage system to be configurable
 
   - Allow to have elements of different classes
