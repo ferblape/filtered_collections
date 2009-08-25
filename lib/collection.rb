@@ -68,8 +68,8 @@ module FilteredCollections
     end
     
     def store_element( element, save = true )
-      raise unless element.respond_to?(:id)
-      raise unless element.respond_to?(self.order_by_attribute)
+      raise FilteredCollections::MissingIdentifierAttribute unless element.respond_to?(:id)
+      raise FilteredCollections::MissingSortByAttribute unless element.respond_to?(self.order_by_attribute)
       
       sort_required = false
       if position = self.index( element.id )
@@ -102,13 +102,13 @@ module FilteredCollections
       limit = nil
       if options[:limit]
         limit = options[:limit].to_i
-        raise if limit <= 0
+        raise FilteredCollections::BadArguments if limit <= 0
         limit = self.total_elements if limit > self.total_elements
       end
       offset = nil
       if options[:offset]
         offset = options[:offset].to_i
-        raise if offset <= 0
+        raise FilteredCollections::BadArguments if offset <= 0
         offset = self.total_elements if offset > self.total_elements
       end
       limit ||= self.total_elements

@@ -4,8 +4,9 @@ $:.unshift File.dirname(__FILE__)
 
 module FilteredCollections
   
-  class CollectionIdRequired < StandardError; end
-  class CollectionBelongsToRequired < StandardError; end
+  class MissingIdentifierAttribute < StandardError; end
+  class MissingSortByAttribute < StandardError; end
+  class BadArguments < StandardError; end
   
   class << self
   
