@@ -1,3 +1,7 @@
+# This module adds the property to store and read objects in <tt>Rails.cache</tt> whenever they change.
+#
+# It is very useful when loading a list of identifiers from a collection and we want to 
+# obtain the complete object without collapsing the database.
 module FilteredCollections
   module ActsAsStoredInCache
   
@@ -7,6 +11,10 @@ module FilteredCollections
   
     module ClassMethods
       def acts_as_stored_in_cache
+        
+        if !ActionController::Base.perform_caching || !defined?(::Rails.cache)
+          ActiveRecord::Base.logger.error "Rails::cache is not defined, so acts_as_stored_in_cache is useless"
+        end
         
         after_save :store_in_cache
         after_destroy :delete_from_cache
@@ -37,7 +45,6 @@ module FilteredCollections
     end
   
     module InstanceMethods
-      
       
       def cache_key
         self.class.cache_key( self.id )

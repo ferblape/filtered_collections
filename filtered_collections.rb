@@ -4,10 +4,18 @@ $:.unshift File.dirname(__FILE__)
 
 module FilteredCollections
   
+  # Raised when the stored object hasn't attribute <tt>:id</tt>
   class MissingIdentifierAttribute < StandardError; end
+  
+  # Raised when the stored object hasn't the attribute indicated to order the collection
   class MissingSortByAttribute < StandardError; end
+  
+  # Raised when the arguments of a function are wrong
   class BadArguments < StandardError; end
   
+  # FIXME
+  # Defines the storage in which keep the collections. 
+  # This has to be changed, in order to allow different storages (maybe with moneta project)
   class << self
   
     def storage

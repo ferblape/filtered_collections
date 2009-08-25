@@ -24,39 +24,46 @@ module FilteredCollections
       self.elements = []
     end
 
+    # Tries to load a collection or create it in other case
     def self.load_or_initialize( elements_class, belongs_to, order_by_attribute, order )
       self.load( elements_class, belongs_to ) || self.new( elements_class, belongs_to, order_by_attribute, order )
     end
 
+    # Creates a collection from a Hash of attributes
     def self.builder(options = {})
       attributes = self.attributes.merge(options)
       "#{self}.load_or_initialize( #{attributes[:elements_class]}, #{attributes[:belongs_to]}, :#{attributes[:order_by_attribute]}, :#{attributes[:order]} )"
     end
     
-    
-    # keys
+    # Given the class of elements to store and the owner of the collection, returns 
+    # which will be the key for that collection
     def self.key_for( elements_class, belongs_to )
       belongs_to = belongs_to.is_a?(Hash) ? belongs_to.map { |k,v| "#{k}_#{v}" }.sort.join('/') : belongs_to
       "#{self.to_s.underscore}/#{elements_class}_#{belongs_to}"
     end
     
+    # The identifier key of a collection
     def key
       self.class.key_for(self.elements_class, self.belongs_to)
     end
-    # /keys
     
+    # Returns if the collection is empty
     def empty?; self.elements_ids.empty? end
     
+    # Given the identifier of an element, returns true if the element is included
     def include?( element_id )
       self.elements_ids.include?( element_id )
     end
     
+    # Given the identifier of an element, returns which is its position
     def index( element_id )
       self.elements_ids.index(element_id)
     end
     
+    # Position of the last element
     def last_position; self.total_elements end
     
+    # Removes the given element
     def delete_element( element )
       element_id = element.is_a?(Fixnum) ? element : element.id
       if position = self.index( element_id )
@@ -67,6 +74,8 @@ module FilteredCollections
       self.save
     end
     
+    # Store one element, and after that saves or not the collection, depending on the value of the second
+    # argument
     def store_element( element, save = true )
       raise FilteredCollections::MissingIdentifierAttribute unless element.respond_to?(:id)
       raise FilteredCollections::MissingSortByAttribute unless element.respond_to?(self.order_by_attribute)
@@ -88,6 +97,7 @@ module FilteredCollections
       self.save if save
     end
 
+    # Stores a collection of elements
     def store_elements( elements )
       elements.each do |element|
         self.store_element( element, false )
@@ -95,10 +105,16 @@ module FilteredCollections
       self.save
     end
     
-    # allowed values for options:
-    #  - :limit 
-    #  - :offset
-    def find( search_type, options = {} )
+    # Returns a list of the elements from the collection, with a syntax very similar 
+    # to <tt>ActiveRecord find</tt> method.
+    #
+    # ==== Parameters
+    #
+    #  - <tt>type</tt>: allowed values are <tt>:all</tt> (in this case, it returns an Array of elements) or <tt>:first</tt>, which returns only the first element
+    #  - <tt>options</tt>: a Hash of options. Allowed options are:
+    #    - <tt>:limit</tt>: the total number of elements to return
+    #    - <tt>:offset</tt>: the offset to apply
+    def find( type, options = {} )
       limit = nil
       if options[:limit]
         limit = options[:limit].to_i
@@ -113,7 +129,7 @@ module FilteredCollections
       end
       limit ||= self.total_elements
       offset ||= 0
-      result = case search_type
+      result = case type
       when :all
         if options.empty?
           self.elements_ids
@@ -134,9 +150,11 @@ module FilteredCollections
       end
     end
 
-    # allowed values for options:
-    #  - :per_page: default 50
-    #  - :page: default 1
+    # Returns a <tt>WillPaginate::Collection</tt> of elements from the collection. The argument is 
+    # a Hash of options. Only two options are allowed:
+    #  
+    #  - <tt>:per_page</tt>: by default 50 elements.
+    #  - <tt>:page</tt>: by default page 1.
     def paginate( options = {} )
       page = options[:page].to_i || 1
       page = 1 if page <= 0
@@ -153,6 +171,12 @@ module FilteredCollections
       end
     end
     
+    # Load the collection from the storage
+    #
+    # ==== Parameters
+    #
+    # * <tt>elements_class</tt>: the class of the elements in the collection
+    # * <tt>belongs_to</tt>: the owner of the collection
     def self.load( elements_class, belongs_to )
       if obj = FilteredCollections.storage.get(self.key_for(elements_class, belongs_to))
         Marshal.load(YAML.load(obj))
@@ -160,7 +184,8 @@ module FilteredCollections
         nil
       end
     end
-      
+    
+    # Store the collection in the storage
     def save
       FilteredCollections.storage.set(key, Marshal.dump(self).to_yaml)
     end
@@ -175,6 +200,7 @@ module FilteredCollections
 
     protected
     
+      # Reorders a collection depending on the <tt>order</tt> value, <tt>:asc</tt> or <tt>:desc</tt>
       def reorder!
         if self.order == :asc
           self.elements.sort!{ |a, b| a.values.first <=> b.values.first }
