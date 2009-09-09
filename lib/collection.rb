@@ -197,19 +197,19 @@ module FilteredCollections
     def self.build( id ); end
     
     def self.attributes; {} end
+    
+    # Reorders a collection depending on the <tt>order</tt> value, <tt>:asc</tt> or <tt>:desc</tt>
+    def reorder!
+      if self.order == :asc
+        self.elements.sort!{ |a, b| a.values.first <=> b.values.first }
+      elsif self.order == :desc
+        self.elements.sort!{ |b, a| a.values.first <=> b.values.first }
+      end
+      self.elements_ids = self.elements.map{ |e| e.keys.first }
+    end
 
     protected
     
-      # Reorders a collection depending on the <tt>order</tt> value, <tt>:asc</tt> or <tt>:desc</tt>
-      def reorder!
-        if self.order == :asc
-          self.elements.sort!{ |a, b| a.values.first <=> b.values.first }
-        elsif self.order == :desc
-          self.elements.sort!{ |b, a| a.values.first <=> b.values.first }
-        end
-        self.elements_ids = self.elements.map{ |e| e.keys.first }
-      end
-      
       # TODO
       def locked?
         false
