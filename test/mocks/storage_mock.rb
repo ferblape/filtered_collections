@@ -17,6 +17,10 @@ module FilteredCollections
     def reset
       @memory.each { |k,v| @memory[k] = nil }
     end
+    
+    def delete(key)
+      @memory[key] = nil
+    end
 
   end
   
